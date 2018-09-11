@@ -1,4 +1,4 @@
-__author__ = 'mangokid'
+__author__ = 'mangokid - edited by Leo, Blake, and Kenneth'
 
 import Slush.Boards.SlushEngine_ModelX as SLX
 from Slush.Base import *
@@ -89,6 +89,14 @@ class sBoard:
             self.bus.write_byte_data(0x20, 0x12, current | (0b1 << pinNumber))
         else:
             self.bus.write_byte_data(0x20, 0x12, current & (0b1 << pinNumber) ^ current)
+            
+    if port ==1:
+        self.bus.write_byte_data(0x20, 0x01, 0x00)
+        current = self.bus.read_byte_data(0x20, 0x13)
+        if state:
+            self.bus.write_byte_data(0x20, 0x13, current | (0b1 << pinNumber))
+        else:
+            self.bus.write_byte_data(0x20, 0x13, current & (0b1 << pinNumber) ^ current)
                                      
   def getIOState(self, port, pinNumber):
     """ sets the output state of the industrial outputs on the SlushEngine. This
@@ -106,8 +114,8 @@ class sBoard:
   def readInput(self, inputNumber):
     """ sets the input to digital with a pullup and returns a read value
     """
-    self.bus.write_byte_data(0x17, inputNumber + 8, 0x00)
-    result = self.bus.read_byte_data(0x17, inputNumber + 20)
+    self.write_byte_data(0x17, inputNumber + 8, 0x00)
+    result = self.read_byte_data(0x17, inputNumber + 20)
     return result
   
   def setOutput(self, outputNumber, state):
