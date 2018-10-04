@@ -54,7 +54,7 @@ class sBoard:
     """ initalizes the spi for use with the motor driver modules
     """    
     sBoard.spi = spidev.SpiDev()
-    sBoard.spi.open(0,0)
+    sBoard.spi.open(0,1)
     sBoard.spi.max_speed_hz = 100000
     sBoard.spi.bits_per_word = 8
     sBoard.spi.loop = False
