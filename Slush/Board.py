@@ -1,4 +1,4 @@
-__author__ = 'mangokid - edited by Leo, Blake, and Kenneth'
+__author__ = 'mangokid'edited by Leo, Blake, Kenneth, and Doug'
 
 import Slush.Boards.SlushEngine_ModelX as SLX
 from Slush.Base import *
@@ -54,6 +54,10 @@ class sBoard:
     """ initalizes the spi for use with the motor driver modules
     """    
     sBoard.spi = spidev.SpiDev()
+    """Changed sBoard.spi.open(0,0) to sBoard.spi.open(0,1)
+    Tells the RPi to use CS1 for the SlushEngine versus CS0
+    The RPiMIB uses CS0, and the Slush UEXT connector also uses CS0  
+    """ 
     sBoard.spi.open(0,1)
     sBoard.spi.max_speed_hz = 100000
     sBoard.spi.bits_per_word = 8
@@ -79,19 +83,19 @@ class sBoard:
     gpio.cleanup() 
 
   def setIOState(self, port, pinNumber, state):
+    
     """ sets the output state of the industrial outputs on the SlushEngine. This
     currentley does not support the digitial IO
     """
-    if port ==0:
+    if port == 0:
         self.bus.write_byte_data(0x20, 0x00, 0x00)
         current = self.bus.read_byte_data(0x20, 0x12)
         if state:
             self.bus.write_byte_data(0x20, 0x12, current | (0b1 << pinNumber))
         else:
             self.bus.write_byte_data(0x20, 0x12, current & (0b1 << pinNumber) ^ current)
-            
-    if port ==1:
-        self.bus.write_byte_data(0x20, 0x01, 0x00)
+    elif port == 1:
+        self.bus.write_byte_data(0x20, 0x00, 0x00)
         current = self.bus.read_byte_data(0x20, 0x13)
         if state:
             self.bus.write_byte_data(0x20, 0x13, current | (0b1 << pinNumber))
@@ -139,6 +143,3 @@ class sBoard:
     """
     self.bus.write_byte_data(0x17, outputNumber, 0x01)
     self.bus.write_byte_data(0x17, outputNumber + 12, pwmVal)
-
-
-    
