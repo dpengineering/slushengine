@@ -1,4 +1,5 @@
-__author__ = 'mangokid; edited by Leo, Blake, Kenneth, and Doug'
+__author__ = 'mangokid'
+__editors__ = 'Leo, Blake, Kenneth, and Doug'
 
 import Slush.Boards.SlushEngine_ModelX as SLX
 from Slush.Base import *
