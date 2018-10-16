@@ -1,4 +1,4 @@
-__author__ = 'mangokid, edited by Leo, Blake, Kenneth, and Doug'
+__author__ = 'mangokid; edited by Leo, Blake, Kenneth, and Doug'
 
 import Slush.Boards.SlushEngine_ModelX as SLX
 from Slush.Base import *
@@ -9,7 +9,7 @@ class sBoard:
     bus = 0
 
     def __init__(self):
-        """ initalize all of the controllers peripheral devices
+        """ initalize all of the controller's peripheral devices
         """
         self.initSPI()
         self.initGPIOState()
@@ -25,7 +25,8 @@ class sBoard:
         # common motor reset pin
         gpio.setup(SLX.L6470_Reset, gpio.OUT)
 
-        # chip select pins, must all be low or SPI will com fail
+        # chip select pins, must all be low or SPI com will fail
+        # sets GPIO pins the output state
         gpio.setup(SLX.MTR0_ChipSelect, gpio.OUT)
         gpio.setup(SLX.MTR1_ChipSelect, gpio.OUT)
         gpio.setup(SLX.MTR2_ChipSelect, gpio.OUT)
@@ -33,6 +34,8 @@ class sBoard:
         gpio.setup(SLX.MTR4_ChipSelect, gpio.OUT)
         gpio.setup(SLX.MTR5_ChipSelect, gpio.OUT)
         gpio.setup(SLX.MTR6_ChipSelect, gpio.OUT)
+
+        # sets GPIO pins to output a high signal
         gpio.output(SLX.MTR0_ChipSelect, gpio.HIGH)
         gpio.output(SLX.MTR1_ChipSelect, gpio.HIGH)
         gpio.output(SLX.MTR2_ChipSelect, gpio.HIGH)
@@ -41,11 +44,11 @@ class sBoard:
         gpio.output(SLX.MTR5_ChipSelect, gpio.HIGH)
         gpio.output(SLX.MTR6_ChipSelect, gpio.HIGH)
 
-        # IO expander reset pin
+        # sets default state for IO expander reset pin
         gpio.setup(SLX.MCP23_Reset, gpio.OUT)
         gpio.output(SLX.MCP23_Reset, gpio.HIGH)
 
-        # preforma a hard reset
+        # preforms a hard reset
         gpio.output(SLX.L6470_Reset, gpio.LOW)
         time.sleep(.1)
         gpio.output(SLX.L6470_Reset, gpio.HIGH)
@@ -59,27 +62,37 @@ class sBoard:
         Tells the RPi to use CS1 for the SlushEngine versus CS0
         The RPiMIB uses CS0, and the Slush UEXT connector also uses CS0  
         """
-        sBoard.spi.open(0, 1)
-        sBoard.spi.max_speed_hz = 100000
-        sBoard.spi.bits_per_word = 8
+        sBoard.spi.open(0, 1)  # opens spi connection
+        sBoard.spi.max_speed_hz = 100000  # sets max spi communication speed to 100000 hz
+        sBoard.spi.bits_per_word = 8  # defines a word to be 8 bits
+
+        """ disables spi loop-back mode. Loop-back mode is where meaningless 
+        signals are sent and received to test that the connection is working correctly.
+        """
         sBoard.spi.loop = False
-        sBoard.spi.mode = 3
+
+        """ Passes two bites as parameters for clock polarity (CPOL) 
+        and clock Phase(CPHA). The first bit is CPOL, the second it CPHA.
+        For more info on CPOL and CPHA, go to http://dlnware.com/dll/Clock-Phase-and-Polarity
+        """
+        sBoard.spi.mode = 0b11
 
     def initI2C(self):
         """ initalizes the i2c bus without relation to any of its slaves
         """
 
-        self.bus = SMBus.SMBus(1)
+        self.bus = SMBus.SMBus(1)  # creates an instance of SMBus (Slave-Master bus)
 
         try:
             with closing(i2c.I2CMaster(1)) as bus:
-                self.chip = MCP23017(bus, 0x20)
-                self.chip.reset()
+                self.chip = MCP23017(bus,
+                                     0x20)  # sets which chip the board is using and where the bus is located (0x20)
+                self.chip.reset()  # restarts so changes take effect
         except:
             pass
 
     def deinitBoard(self):
-        """ closes the board and deinits the peripherals
+        """ closes the board and deinits the peripherals. Sets all channels back to their default state.
         """
         gpio.cleanup()
 
