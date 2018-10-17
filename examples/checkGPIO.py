@@ -27,8 +27,8 @@ while(1):
 		j = j + 1
 		if j == 2:
 			j = 0
-			label = "A" #label pins associated with port A
+			label = "A" #checking and printing pins associated with port A
 		elif j == 1:
-			label = "B" #label pins associated with port A
+			label = "B" #checking and printing pins associated with port B
 
 	time.sleep(0.5)
