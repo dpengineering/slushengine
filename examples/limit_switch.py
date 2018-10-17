@@ -13,7 +13,7 @@ import Slush
 b = Slush.sBoard()
 axis1 = Slush.Motor(0)
 axis1.resetDev()
-axis1.setCurrent(20, 20, 20, 20)
+axis1.setCurrent(20, 20, 20, 20) # sets current to 20 for hold, run, accelerate, and decelerate
 
 #home the motor off a limit switch
 while(axis1.isBusy()):	
