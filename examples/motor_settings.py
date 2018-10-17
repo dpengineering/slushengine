@@ -1,27 +1,27 @@
 """
 Title: Motor Settings
 
-Description: This example will iterate through a number of diffrent stepper motor 
-settings. This program is intended to show some of the diffrent configurations the
+Description: This example will iterate through a number of different stepper motor
+settings. This program is intended to show some of the different configurations the
 motor is capable of. 
 
 Note: This example is dependant on your type of motor and power supply. If you find 
 you motor skipping steps you may need to slow it down a bit.
 
 """
-#import the required module
+#import the required modules
 import Slush
 import time
 
-#initalizes the board and all its functions
+#initalize the board and all its functions
 SlushEngine = Slush.sBoard()
 
-#initalizes the motor on the board
+#initalize the motor on the board
 Motor = Slush.Motor(0)
 Motor.resetDev()
 Motor.setCurrent(20, 20, 20, 20)
 
-#run the motor with the defulat settings
+#run the motor with the default settings
 print("Running the motor at 100 Steps/Second")
 Motor.run(1, 100)
 time.sleep(2)
@@ -31,7 +31,7 @@ print("Drive disabled, motor can now free spin")
 Motor.free() 
 time.sleep(5) 
 
-#move the motor 20000 steps from its current position at the deault settngs
+#move the motor 20000 steps from its current position at the default settings
 print("Moving the motor 100000 steps in reverse")
 Motor.move(-100000)
 
