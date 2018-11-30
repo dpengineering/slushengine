@@ -4,15 +4,15 @@
 __author__ = 'mangokid'
 
 from Slush.Board import *
-#import quick2wire.i2c as i2c
+import quick2wire.i2c as i2c
 import binascii
 import math
 
 
-class Temprature(sBoard):
+class Temperature(sBoard):
 
     def __init__(self):
-        """ basic init functions for the temprature module
+        """ basic init functions for the temperature module
         """
         self.address = 0x36
         self.initSensor()
@@ -22,8 +22,8 @@ class Temprature(sBoard):
         endded mode with vdd as ref
         """
         with i2c.I2CMaster(1) as bus:
-            bus.transaction(i2c.writing_bytes(self.address, 0x8a ))
-            bus.transaction(i2c.writing_bytes(self.address, 0x01 ))    
+            bus.transaction(i2c.writing_bytes(self.address, 0x8a))
+            bus.transaction(i2c.writing_bytes(self.address, 0x01))
 
     def getTempRaw(self):
         """ gets the raw hex values from the i2c device
@@ -36,8 +36,8 @@ class Temprature(sBoard):
             return (h & 0b0000001111111111)
 
     def calcTemp(self, tempraw):
-        """ calculate temprature with Steinhart-Hart equations paramters
-        are rough defualts for 50k resistor
+        """ calculate temperature with Steinhart-Hart equations parameters
+        are rough defaults for 50k resistor
         """ 
         POTENTIAL_DIVIDER_RESISTOR = 100000
         THERMISTOR_B_VALUE = 3950
@@ -51,8 +51,8 @@ class Temprature(sBoard):
     
         return temp-273.15
 
-    def getTemprature(self):
-        """ return the temprature at the NTC junctino
+    def getTemperature(self):
+        """ return the temperature at the NTC junction
         """
         return self.calcTemp(self.getTempRaw())
 
