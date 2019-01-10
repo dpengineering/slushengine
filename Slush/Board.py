@@ -119,7 +119,7 @@ class sBoard:
   def readInput(self, inputNumber):
     """ sets the input to digital with a pullup and returns a read value
     """
-    self.bus.write_byte_data(0x17, inputNumber + 8, 0x00
+    self.bus.write_byte_data(0x17, inputNumber + 8, 0x00 #recent version of Slush Engine has inputNumber + 20
     return self.bus.read_byte_data(0x17, inputNumber + 20)
     
   
