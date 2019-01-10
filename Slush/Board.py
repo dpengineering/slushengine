@@ -119,9 +119,9 @@ class sBoard:
   def readInput(self, inputNumber):
     """ sets the input to digital with a pullup and returns a read value
     """
-    self.bus.write_byte_data(0x17, inputNumber + 8, 0x00)
-    result = self.bus.read_byte_data(0x17, inputNumber + 20)
-    return result
+    self.bus.write_byte_data(0x17, inputNumber + 8, 0x00
+    return self.bus.read_byte_data(0x17, inputNumber + 20)
+    
   
   def setOutput(self, outputNumber, state):
     """ sets the output state of the IO to digital and then sets the state of the 
