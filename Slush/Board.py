@@ -9,8 +9,8 @@ class sBoard:
     """ initalize all of the controllers peripheral devices
     """
     self.initSPI()
+    self.initI2C()
     self.initGPIOState()
-    self.initI2C()    
 	       
   def initGPIOState(self):
     """sets the default states for the GPIO on the slush modules. *This
@@ -74,6 +74,7 @@ class sBoard:
             self.chip.reset()
     except:
         pass
+    print(self.bus.read_byte_data(0x32, 0x05))
 
   def deinitBoard(self):
     """ closes the board and deinits the peripherals
