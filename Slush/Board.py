@@ -5,12 +5,13 @@ class sBoard:
   chip = 0
   bus = 0
 
-  def __init__(self):
+  def __init__(self, board = 'XLT'):
     """ initalize all of the controllers peripheral devices
     """
+    self.board = board
     self.initSPI()
     self.initGPIOState()
-    self.initI2C()    
+    self.initI2C()
 	       
   def initGPIOState(self):
     """sets the default states for the GPIO on the slush modules. *This
@@ -23,24 +24,37 @@ class sBoard:
     gpio.setup(SLX.L6470_Reset, gpio.OUT)
     
     #chip select pins, must all be low or SPI will com fail
-    gpio.setup(SLX.MTR0_ChipSelect, gpio.OUT)
-    gpio.setup(SLX.MTR1_ChipSelect, gpio.OUT)
-    gpio.setup(SLX.MTR2_ChipSelect, gpio.OUT)
-    gpio.setup(SLX.MTR3_ChipSelect, gpio.OUT)
-    gpio.setup(SLX.MTR4_ChipSelect, gpio.OUT)
-    gpio.setup(SLX.MTR5_ChipSelect, gpio.OUT)
-    gpio.setup(SLX.MTR6_ChipSelect, gpio.OUT)
-    gpio.output(SLX.MTR0_ChipSelect, gpio.HIGH)
-    gpio.output(SLX.MTR1_ChipSelect, gpio.HIGH)
-    gpio.output(SLX.MTR2_ChipSelect, gpio.HIGH)
-    gpio.output(SLX.MTR3_ChipSelect, gpio.HIGH)
-    gpio.output(SLX.MTR4_ChipSelect, gpio.HIGH)
-    gpio.output(SLX.MTR5_ChipSelect, gpio.HIGH)
-    gpio.output(SLX.MTR6_ChipSelect, gpio.HIGH)
+    if self.board is 'XLT':
+        gpio.setup(SLX.MTR0_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR1_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR2_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR3_ChipSelect, gpio.OUT)
+        gpio.output(SLX.MTR0_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR1_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR2_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR3_ChipSelect, gpio.HIGH)
 
-    #IO expander reset pin
-    gpio.setup(SLX.MCP23_Reset, gpio.OUT)
-    gpio.output(SLX.MCP23_Reset, gpio.HIGH)
+        # IO expander reset pin
+        gpio.setup(SLX.MCP23_Reset, gpio.OUT)
+        gpio.output(SLX.MCP23_Reset, gpio.HIGH)
+
+    elif self.board is 'D':
+        gpio.setup(SLX.MTR0_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR1_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR2_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR3_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR4_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR5_ChipSelect, gpio.OUT)
+        gpio.setup(SLX.MTR6_ChipSelect, gpio.OUT)
+        gpio.output(SLX.MTR0_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR1_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR2_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR3_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR4_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR5_ChipSelect, gpio.HIGH)
+        gpio.output(SLX.MTR6_ChipSelect, gpio.HIGH)
+    else:
+        raise Exception('Board should be ''XLT'' or ''D''')
 
     #preforma a hard reset
     gpio.output(SLX.L6470_Reset, gpio.LOW)
