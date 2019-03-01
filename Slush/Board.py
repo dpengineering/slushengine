@@ -86,7 +86,7 @@ class sBoard:
             self.chip.reset()
     except:
         pass
-    print(self.bus.read_byte_data(0x32, 0x05))
+    self.bus.write_byte_data(0x20, 0x05, 0x01)
 
   def deinitBoard(self):
     """ closes the board and deinits the peripherals
