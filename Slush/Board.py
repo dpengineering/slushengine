@@ -33,6 +33,11 @@ class sBoard:
         gpio.output(SLX.MTR1_ChipSelect, gpio.HIGH)
         gpio.output(SLX.MTR2_ChipSelect, gpio.HIGH)
         gpio.output(SLX.MTR3_ChipSelect, gpio.HIGH)
+
+        # IO expander reset pin
+        gpio.setup(SLX.MCP23_Reset, gpio.OUT)
+        gpio.output(SLX.MCP23_Reset, gpio.HIGH)
+
     elif self.board is 'D':
         gpio.setup(SLX.MTR0_ChipSelect, gpio.OUT)
         gpio.setup(SLX.MTR1_ChipSelect, gpio.OUT)
@@ -50,9 +55,6 @@ class sBoard:
         gpio.output(SLX.MTR6_ChipSelect, gpio.HIGH)
     else:
         raise Exception('Board should be ''XLT'' or ''D''')
-    #IO expander reset pin
-    gpio.setup(SLX.MCP23_Reset, gpio.OUT)
-    gpio.output(SLX.MCP23_Reset, gpio.HIGH)
 
     #preforma a hard reset
     gpio.output(SLX.L6470_Reset, gpio.LOW)
