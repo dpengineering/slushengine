@@ -31,7 +31,7 @@ class Motor(sBoard):
         #init the hardware
         self.initPeripherals()
 
-    ''' initalise the appropriate pins and buses '''
+    ''' initialize the appropriate pins and buses '''
     def initPeripherals(self):
 
         #check that the motors SPI is actually working
@@ -49,9 +49,9 @@ class Motor(sBoard):
             self.setOverCurrent(2000)
             self.setMicroSteps(16)
             self.setCurrent(70, 90, 100, 100)
-            self.setParam([0x18, 16], 0x3608)
+            self.setParam([0x18, 16], 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
         if self.boardInUse == 1:
-            self.setParam([0x1A, 16], 0x3608)
+            self.setParam([0x1A, 16], 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
             self.setCurrent(100, 120, 140, 140)
             self.setMicroSteps(16)
 
@@ -105,7 +105,7 @@ class Motor(sBoard):
     def setMinSpeed(self, speed):
         self.setParam(LReg.MIN_SPEED, self.minSpdCalc(speed))
 
-    ''' set accerleration rate '''
+    ''' set acceleration rate '''
     def setAccel(self, acceleration):
         accelerationBytes = self.accCalc(acceleration)
         self.setParam(LReg.ACC, accelerationBytes)
@@ -115,7 +115,7 @@ class Motor(sBoard):
         decelerationBytes = self.decCalc(deceleration)
         self.setParam(LReg.DEC, decelerationBytes)
 
-    ''' get the posistion of the motor '''
+    ''' get the position of the motor '''
     def getPosition(self):
         return self.convert(self.getParam(LReg.ABS_POS))
 
@@ -136,7 +136,7 @@ class Motor(sBoard):
         if(STHValue < 0): STHValue = 9
         self.setParam((LReg.STALL_TH), STHValue)
 
-    ''' set low speed optamization '''
+    ''' set low speed optimization '''
     def setLowSpeedOpt(self, enable):
         self.xfer(LReg.SET_PARAM | LReg.MIN_SPEED[0])
         if enable: self.param(0x1000, 13)
@@ -172,7 +172,7 @@ class Motor(sBoard):
         self.xfer(n_stepABS >> 8)
         self.xfer(n_stepABS)
 
-    ''' move to a position with refrence to the motors current position '''
+    ''' move to a position with reference to the motors current position '''
     def goTo(self, pos):
         self.xfer(LReg.GOTO)
         if pos > 0x3fffff: pos = 0x3fffff
@@ -191,11 +191,11 @@ class Motor(sBoard):
     ''' sets the hardstop option for the limit switch '''
     def setLimitHardStop(self, stop):
         if self.boardInUse is 0:
-            if stop == 1: self.setParam([0x18, 16], 0x3608)
-            if stop == 0: self.setParam([0x18, 16], 0x3618)
+            if stop == 1: self.setParam([0x18, 16], 0x3688)  # changed 0x3608 and 0x3818 to 0x3688 and 0x3698
+            if stop == 0: self.setParam([0x18, 16], 0x3698)  # to enable OC_SD - shutdown driver if over-current
         if self.boardInUse is 1:
-            if stop == 1: self.setParam([0x1A, 16], 0x3608)
-            if stop == 0: self.setParam([0x1A, 16], 0x3618)
+            if stop == 1: self.setParam([0x1A, 16], 0x3688)  # changed 0x3608 and 0x3818 to 0x3688 and 0x3698
+            if stop == 0: self.setParam([0x1A, 16], 0x3698)  # to enable OC_SD - shutdown driver if over-current
 
     ''' go until switch press event occurs '''
     def goUntilPress(self, act, dir, spd):
@@ -245,8 +245,8 @@ class Motor(sBoard):
     ''' reset the device to initial conditions '''
     def resetDev(self):
         self.xfer(LReg.RESET_DEVICE)
-        if self.boardInUse == 1: self.setParam([0x1A, 16], 0x3608)
-        if self.boardInUse == 0: self.setParam([0x18, 16], 0x3608)
+        if self.boardInUse == 1: self.setParam([0x1A, 16], 0x3688)
+        if self.boardInUse == 0: self.setParam([0x18, 16], 0x3688)
 
     ''' stop the motor using the decel '''
     def softStop(self):
@@ -339,7 +339,7 @@ class Motor(sBoard):
     ''' transfer data to the spi bus '''
     def xfer(self, data):
 
-        #mask the value to a byte format for transmision
+        #mask the value to a byte format for transmission
         data = (int(data) & 0xff)
 
         #toggle chip select and SPI transfer
