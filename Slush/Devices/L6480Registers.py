@@ -35,7 +35,10 @@ OCD_TH_781.25mV 	= 0x18
 OCD_TH_812.5mV 	= 0x19
 OCD_TH_843.75mV 	= 0x1A
 OCD_TH_875mV 	= 0x1B
-OCD_TH_mV 	= 0x1C
+OCD_TH_906.25mV 	= 0x1C
+OCD_TH_937.5mV 	= 0x1D
+OCD_TH_968.75mV 	= 0x1E
+OCD_TH_1000mV 	= 0x1F
 
 '''step mode register masks'''
 STEP_MODE_STEP_EN 	= 0x70
@@ -180,8 +183,8 @@ STEP_MODE	= ( 0x16 , 8  )
 ALARM_EN	= ( 0x17 , 8  )
 GATECFG1	= ( 0x18 , 11 )
 GATECFG2	= ( 0x19 , 8  )
-CONFIG		= ( 0x18 , 16 )
-STATUS		= ( 0x19 , 16 )
+CONFIG		= ( 0x1A , 16 )
+STATUS		= ( 0x1B , 16 )
 
 '''command set'''
 NOP 			= 0x00
