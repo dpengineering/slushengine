@@ -54,6 +54,9 @@ class Motor(sBoard):
             self.setParam([0x1A, 16], 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
             self.setCurrent(100, 120, 140, 140)
             self.setMicroSteps(16)
+            #New to configure GATECFG1 and OCD_TH
+            self.setParam([0x18, 8], 0x5f) # Igate = 8mA and tcc=3750nS(max)
+            self.setParam([0x13, 8], 0x1f) # OCD_Th 1V (max)
 
         #self.setParam(LReg.KVAL_RUN, 0xff)
         self.getStatus()

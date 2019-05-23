@@ -5,7 +5,7 @@ class sBoard:
   chip = 0
   bus = 0
 
-  def __init__(self, board = 'XLT'):
+  def __init__(self, board = 'D'):
     """ initalize all of the controllers peripheral devices
     """
     self.board = board

@@ -161,6 +161,7 @@ STEP_MODE	= ( 0x16 , 8  )
 ALARM_EN	= ( 0x17 , 8  )
 CONFIG		= ( 0x18 , 16 )
 STATUS		= ( 0x19 , 16 )
+CONFIGD         = ( 0x1A , 16 )
 
 '''command set'''
 NOP 			= 0x00
