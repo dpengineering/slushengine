@@ -5,6 +5,7 @@ __author__ = 'mangokid'
 
 from Slush.Board import *
 from Slush.Devices import L6470Registers as LReg
+from Slush.Devices import L6480Registers as LReg6480
 import math
 
 class Motor(sBoard):
@@ -38,7 +39,7 @@ class Motor(sBoard):
         if (self.getParam(LReg.CONFIG) == 0x2e88):
             print ("Motor Drive Connected on GPIO " + str(self.chipSelect))
             self.boardInUse = 0
-        elif (self.getParam([0x1A, 16]) == 0x2c88):
+        elif (self.getParam(LReg6480.CONFIG) == 0x2c88):
             print ("High Power Drive Connected on GPIO " + str(self.chipSelect))
             self.boardInUse = 1
         else:
@@ -49,14 +50,14 @@ class Motor(sBoard):
             self.setOverCurrent(2000)
             self.setMicroSteps(16)
             self.setCurrent(70, 90, 100, 100)
-            self.setParam([0x18, 16], 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
+            self.setParam(LReg.CONFIG, 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
         if self.boardInUse == 1:
-            self.setParam([0x1A, 16], 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
+            self.setParam(LReg6480.CONFIG, 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
             self.setCurrent(100, 120, 140, 140)
             self.setMicroSteps(16)
             #New to configure GATECFG1 and OCD_TH
-            self.setParam([0x18, 8], 0x5f) # Igate = 8mA and tcc=3750nS(max)
-            self.setParam([0x13, 8], 0x1f) # OCD_Th 1V (max)
+            self.setParam(LReg6480.GATECFG1, 0x5f) # Igate = 8mA and tcc=3750nS(max)
+            self.setParam(LReg6480.OCD_TH, 0x1f) # OCD_Th 1V (max)
 
         #self.setParam(LReg.KVAL_RUN, 0xff)
         self.getStatus()
