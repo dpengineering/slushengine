@@ -50,7 +50,7 @@ class Motor(sBoard):
             self.setCurrent(70, 90, 100, 100)
             self.setParam(LReg.CONFIG, 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
         if self.boardInUse == 1:
-            self.setParam(LReg6480.config, 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
+            self.setParam(LReg6480.CONFIG, 0x3688)  # changed 0x3608 to 0x3688 enable OC_SD - shutdown driver if over-current
             self.setCurrent(100, 120, 140, 140)
             self.setMicroSteps(16)
             self.setParam(LReg6480.GATECFG1, 0x5F) # Igate = 8mA and tcc=3750nS(max)
