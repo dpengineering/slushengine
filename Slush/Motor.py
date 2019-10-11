@@ -8,13 +8,14 @@ from Slush.Devices import L6470Registers as LReg
 from Slush.Devices import L6480Registers as LReg6480
 import math
 
+
 class Motor(sBoard):
     
     boardInUse = 0
     
     def __init__(self, motorNumber):
        
-        #setting the particular chip parameters
+        # setting the particular chip parameters
         if motorNumber == 0:
             self.chipSelect = SLX.MTR0_ChipSelect
         if motorNumber == 1:
@@ -22,30 +23,30 @@ class Motor(sBoard):
         if motorNumber == 2:
             self.chipSelect = SLX.MTR2_ChipSelect
         if motorNumber == 3:
-            self.chipSelect = SLX.MTR3_ChipSelect   
+            self.chipSelect = SLX.MTR3_ChipSelect
         if motorNumber == 4:
             self.chipSelect = SLX.MTR4_ChipSelect
         if motorNumber == 5:
             self.chipSelect = SLX.MTR5_ChipSelect
         if motorNumber == 6:
             self.chipSelect = SLX.MTR6_ChipSelect
-        #init the hardware
+        # init the hardware
         self.initPeripherals()
 
     ''' initialize the appropriate pins and buses '''
     def initPeripherals(self):
 
-        #check that the motors SPI is actually working
+        # check that the motors SPI is actually working
         if (self.getParam(LReg.CONFIG) == 0x2e88):
-            print ("Motor Drive Connected on GPIO " + str(self.chipSelect))
+            print("Motor Drive Connected on GPIO " + str(self.chipSelect))
             self.boardInUse = 0
         elif (self.getParam(LReg6480.CONFIG) == 0x2c88):
-            print ("High Power Drive Connected on GPIO " + str(self.chipSelect))
+            print("High Power Drive Connected on GPIO " + str(self.chipSelect))
             self.boardInUse = 1
         else:
-            print ("communication issues; check SPI configuration and cables")
+            print("communication issues; check SPI configuration and cables")
 
-        #based on board type init driver accordingly
+        # based on board type init driver accordingly
         if self.boardInUse == 0:
             self.setOverCurrent(2000)
             self.setMicroSteps(16)
@@ -143,8 +144,18 @@ class Motor(sBoard):
     ''' set low speed optimization '''
     def setLowSpeedOpt(self, enable):
         self.xfer(LReg.SET_PARAM | LReg.MIN_SPEED[0])
-        if enable: self.param(0x1000, 13)
-        else: self.param(0, 13)
+        if enable:
+            self.param(0x1000, 13)
+        else:
+            self.param(0, 13)
+
+    ''' set slope speeds to eliminate BEMF'''
+
+    def setSlope(self, speed, start, acc, dec):
+        self.setParam(LReg.INT_SPD, speed)
+        self.setParam(LReg.ST_SLP, start)
+        self.setParam(LReg.FN_SLP_ACC, acc)
+        self.setParam(LReg.FN_SLP_DEC, dec)
 
     ''' start the motor spinning '''
     def run(self, dir, spd):
