@@ -6,7 +6,7 @@ Source Reference: https://github.com/ameyer/Arduino-L6470/blob/master/L6470/L647
 from Slush.Board import *
 from Slush.Devices import L6470Registers as LReg
 from Slush.Devices import L6480Registers as LReg6480
-from Slush.Boards.BoardUtilities import BoardTypes, CHIP_STATUSES_XLT, CHIP_STATUSES_D, CHIP_READ_DELAY_TIME
+from Slush.Boards.BoardUtilities import BoardTypes, CHIP_STATUSES_XLT, D_CHIP_SELECTS, CHIP_STATUSES_D, CHIP_READ_DELAY_TIME
 from Slush.Boards.SlushEngine_ModelX import MTR_Flag
 from time import sleep
 import math
@@ -65,12 +65,10 @@ class Motor(sBoard):
         Setup the gpio flag pin to be an input and setup event detection.
         :return: None
         """
-        if self.boardInUse == BoardTypes.D:
-            return
-
+        chip_selects = XLT_CHIP_SELECTS if self.boardInUse == BoardTypes.XLT else D_CHIP_SELECTS  # set chip_selects based upon boardInUse
         original_chip_select = self.chipSelect  # save original chipSelect as it will be changed
 
-        for chip in XLT_CHIP_SELECTS:
+        for chip in chip_selects:
             self.chipSelect = chip  # xfer uses the current chipSelect so we must change it
 
             gpio.setup(chip, gpio.OUT)
@@ -97,7 +95,7 @@ class Motor(sBoard):
         If the debug level is "HIGH" all motors will be freed and the program will exit
         :return: None
         """
-        error_message = "\nTHE SLUSH FLAG PIN HAS BEEN ACTIVATED, STEPPER STATUS FOR{}"
+        error_message = "\nTHE SLUSH FLAG PIN HAS BEEN ACTIVATED, STEPPER STATUS FOR {}"
 
         for motor in Motor.instances:
             if motor.debug == "OFF":  # ignore all motors with a debug level of OFF
