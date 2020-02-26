@@ -9,7 +9,8 @@ XLT_CHIP_SELECTS = [SLX.MTR0_ChipSelect, SLX.MTR1_ChipSelect, SLX.MTR2_ChipSelec
 D_CHIP_SELECTS = [SLX.MTR0_ChipSelect, SLX.MTR1_ChipSelect, SLX.MTR2_ChipSelect, SLX.MTR3_ChipSelect,
                       SLX.MTR4_ChipSelect, SLX.MTR5_ChipSelect, SLX.MTR6_ChipSelect]
 
-DEBUG_LEVELS = ["HIGH", "LOW", "OFF"]  # Defined debug levels
+CHIP_PORT_ASSIGNMENTS = {0: SLX.MTR0_ChipSelect, 1: SLX.MTR1_ChipSelect, 2: SLX.MTR2_ChipSelect, 3: SLX.MTR3_ChipSelect,
+                         4: SLX.MTR4_ChipSelect, 5: SLX.MTR5_ChipSelect, 6: SLX.MTR6_ChipSelect}
 
 CHIP_READ_DELAY_TIME = 0.1  # Delay time when reading print status in flag_pin_callback()
 DEBOUNCE_TIME = 500  # Debounce time when attaching event detect on Slush Engine GPIO Flag Pin

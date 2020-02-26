@@ -6,9 +6,7 @@ Source Reference: https://github.com/ameyer/Arduino-L6470/blob/master/L6470/L647
 from Slush.Board import *
 from Slush.Devices import L6470Registers as LReg
 from Slush.Devices import L6480Registers as LReg6480
-from Slush.Boards.BoardUtilities import BoardTypes, CHIP_STATUSES_XLT, D_CHIP_SELECTS, CHIP_STATUSES_D, CHIP_READ_DELAY_TIME
-from Slush.Boards.SlushEngine_ModelX import MTR_Flag
-from time import sleep
+from Slush.Boards.BoardUtilities import BoardTypes, CHIP_STATUSES_XLT, CHIP_STATUSES_D, CHIP_PORT_ASSIGNMENTS
 import math
 
 
@@ -17,98 +15,25 @@ class Motor(sBoard):
     Class to control a stepper motor
     """
 
-    """ Dictionary holding all of the associated motor chip selects for a given port"""
-    chip_assignments = {0: SLX.MTR0_ChipSelect, 1: SLX.MTR1_ChipSelect, 2: SLX.MTR2_ChipSelect, 3: SLX.MTR3_ChipSelect,
-                        4: SLX.MTR4_ChipSelect, 5: SLX.MTR5_ChipSelect, 6: SLX.MTR6_ChipSelect}
-
-    boardInUse = 0
     instances = []
 
-    def __init__(self, motorNumber: int, debug_level: str = "LOW"):
+    def __init__(self, motorNumber: int):
         """
         Setup a motor for
         :param motorNumber: Port the motor has been plugged into on the Slush Engine
         """
 
-        # Assign chipSelect from chip_assignments dictionary
+        # Assign chipSelect from chip port select dictionary
         try:
-            self.chipSelect = Motor.chip_assignments[motorNumber]
+            self.chipSelect = CHIP_PORT_ASSIGNMENTS[motorNumber]
         except KeyError:
-            raise ValueError("The given motor number is not acceptable")
+            raise ValueError("The given motor number is not acceptable, acceptable port range{}".format(range(CHIP_PORT_ASSIGNMENTS.keys())))
 
         # init the hardware
-        self.debug = None
-        self.set_debug_level(debug_level)
+        self.boardInUse = None
         self.initPeripherals()
-        self.init_chips()
         self.port = motorNumber
         Motor.instances.append(self)
-
-    def set_debug_level(self, level: str) -> None:
-        """
-        Set the debug level. Please refer to BoardUtilities.DEBUG_LEVELS for a list of acceptable values
-        :type level: str
-        :param level: New debug level
-        :raises ValueError: A ValueError is raised when the given level is not an acceptable debug level
-        :return: None
-        """
-        level = level.upper()
-        if level in DEBUG_LEVELS:
-            self.debug = level
-        else:
-            raise ValueError("Given debug level is bad, check acceptable levels in BoardUtilities")
-
-    def init_chips(self) -> None:
-        """
-        Initialize all of the stepper motor chips. Set each chips ALARM register to ignore UVLO and switch turn on events
-
-        Setup the gpio flag pin to be an input and setup event detection.
-        :return: None
-        """
-        chip_selects = XLT_CHIP_SELECTS if self.boardInUse == BoardTypes.XLT else D_CHIP_SELECTS  # set chip_selects based upon boardInUse
-        original_chip_select = self.chipSelect  # save original chipSelect as it will be changed
-
-        for chip in chip_selects:
-            self.chipSelect = chip  # xfer uses the current chipSelect so we must change it
-
-            gpio.setup(chip, gpio.OUT)
-            self.setParam(LReg.ALARM_EN, 0xB7)  # ignore UVLO and switch turn on events
-            self.getParam(LReg.STATUS)  # get status to ensure the UVLO status bit is high as it is low upon start up
-
-        self.chipSelect = original_chip_select  # set the chipSelect back to original
-
-        # Add event detection on the chip monitoring pin
-        gpio.remove_event_detect(MTR_Flag)  # remove any previous event detects (multiple motor setups)
-        gpio.setup(MTR_Flag, gpio.IN)  # setup the flag pin to be an input
-        gpio.add_event_detect(MTR_Flag, gpio.FALLING, callback=lambda channel: Motor.flag_pin_callback(),
-                              bouncetime=DEBOUNCE_TIME)  # add event detect on falling edge of pin
-
-    @staticmethod
-    def flag_pin_callback() -> None:
-        """
-        Function called when the trigger pin has been activated. Prints the associated status of each stepper motor.
-        Please note that if any of the stepper motors have a debug level of "HIGH" the program will exit and free all steppers
-        Please note the stepper motor chips may return bad data if there is not sufficient time between chip status reads
-
-        If the debug level is "OFF" nothing will happen
-        If the debug level is "LOW" there will be a console print notifying of the trigger
-        If the debug level is "HIGH" all motors will be freed and the program will exit
-        :return: None
-        """
-        error_message = "\nTHE SLUSH FLAG PIN HAS BEEN ACTIVATED, STEPPER STATUS FOR {}"
-
-        for motor in Motor.instances:
-            if motor.debug == "OFF":  # ignore all motors with a debug level of OFF
-                continue
-
-            print(error_message.format(motor))
-            motor.print_status()
-            sleep(CHIP_READ_DELAY_TIME)
-
-        if any(motor.debug == "HIGH" for motor in Motor.instances):  # if any motor has a debug level of HIGH
-            print("FREEING ALL MOTORS AND EXITING")
-            Motor.free_all()
-            os._exit(1)  # exit the program
 
     @staticmethod
     def free_all():
@@ -128,7 +53,7 @@ class Motor(sBoard):
         print("The byte for ", self, "is: ", byte)
 
         """Assign chip_status dict according to board type"""
-        chip_status = CHIP_STATUSES_D if self.boardInUse.value else CHIP_STATUSES_XLT
+        chip_status = CHIP_STATUSES_D if self.boardInUse == BoardTypes.D else CHIP_STATUSES_XLT
 
         """Loop through all statuses and print the corresponding bit data"""
         for status in chip_status.keys():
@@ -162,14 +87,14 @@ class Motor(sBoard):
         byte = self._get_status_byte()
 
         """Assign chip_status dict according to board type using ternary operator"""
-        chip_status = CHIP_STATUSES_D if self.boardInUse else CHIP_STATUSES_XLT
+        chip_status = CHIP_STATUSES_D if self.boardInUse == BoardTypes.D else CHIP_STATUSES_XLT
 
         for key in chip_status.keys():  # Go through all keys and check if the status is contained in any of the keys
             if str.find(key, status_register.upper()) >= 0:
                 status_register = key
                 break
 
-        data = CHIP_STATUSES_XLT.get(status_register)
+        data = chip_status.get(status_register)
 
         if data is None:
             raise ValueError("Invalid status register please double check your given status register")
@@ -192,6 +117,7 @@ class Motor(sBoard):
             print("High Power Drive Connected on GPIO " + str(self.chipSelect))
             self.boardInUse = BoardTypes.D
         else:
+            self.boardInUse = BoardTypes.XLT  # By default set the current board being used to XLT if there are communication issues
             print("communication issues; check SPI configuration and cables")
 
         # based on board type init driver accordingly
