@@ -21,10 +21,6 @@ MTR4_ChipSelect         = 20
 MTR5_ChipSelect         = 21
 MTR6_ChipSelect         = 22
 
-
-
-MTR_Flag	= 13
-
 '''MCP23 pin defines'''
 MCP23_Reset = 20
 
